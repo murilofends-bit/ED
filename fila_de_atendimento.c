@@ -2,9 +2,14 @@
 
 int main() {
 
-    t_lista l;
+    /* Duas filas separadas: uma para VIP, outra para comum.
+       Assim o VIP sempre passa na frente do comum, mas a ordem
+       de chegada ENTRE os VIPs (e entre os comuns) e' respeitada. */
+    t_lista vip;
+    t_lista comum;
 
-    inicia_lista(&l);
+    inicia_lista(&vip);
+    inicia_lista(&comum);
 
     int opcao = 0;
 
@@ -33,23 +38,29 @@ int main() {
             case 1:
 
                 printf("\nSenha comum gerada: %d\n", senha);
-                insere_fim(senha, &l);
+                insere_fim(senha, &comum);   /* comum entra no fim da fila comum */
                 senha++;
                 break;
 
             case 2:
 
                 printf("\nSenha VIP gerada: %d\n", senhaVIP);
-                insere_inicio(senhaVIP, &l);
+                insere_fim(senhaVIP, &vip);  /* VIP entra no fim da fila VIP (mantem ordem de chegada) */
                 senhaVIP++;
                 break;
 
             case 3:
 
-                if(!lista_vazia(&l)) {
+                /* Atende primeiro os VIPs; so' depois os comuns. */
+                if(!lista_vazia(&vip)) {
+
+                    printf("\nSenha VIP %d foi atendida.\n",
+                           remove_inicio(&vip));
+
+                } else if(!lista_vazia(&comum)) {
 
                     printf("\nSenha %d foi atendida.\n",
-                           remove_inicio(&l));
+                           remove_inicio(&comum));
 
                 } else {
 
@@ -60,13 +71,19 @@ int main() {
 
             case 4:
 
-                exibe_lista(&l);
+                printf("\n=== Fila VIP ===");
+                exibe_lista(&vip);
+                printf("\n=== Fila Comum ===");
+                exibe_lista(&comum);
 
                 break;
 
             case 5:
 
-                printf("\nExistem %d pessoas aguardando na fila.\n",tamanho_lista(&l));
+                printf("\nExistem %d pessoas aguardando na fila (VIP: %d | Comum: %d).\n",
+                       tamanho_lista(&vip) + tamanho_lista(&comum),
+                       tamanho_lista(&vip),
+                       tamanho_lista(&comum));
 
                 break;
 
